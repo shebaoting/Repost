@@ -13,7 +13,10 @@ namespace Shebaoting\Repost;
 
 use Flarum\Extend;
 use Flarum\Api\Serializer\DiscussionSerializer;
+use Flarum\Api\Controller\CreateDiscussionController;
+use Flarum\Api\Controller\UpdateDiscussionController;
 use Flarum\Discussion\Discussion;
+use Illuminate\Support\Arr;
 
 return [
     (new Extend\Frontend('forum'))
@@ -23,23 +26,38 @@ return [
         ->js(__DIR__ . '/js/dist/admin.js')
         ->css(__DIR__ . '/less/admin.less'),
     new Extend\Locales(__DIR__ . '/locale'),
+
     // 扩展模型，添加 original_url 属性
     (new Extend\Model(Discussion::class))
         ->cast('original_url', 'string'),
 
+    // 扩展 API Serializer，确保 original_url 被包含在 API 响应中
     (new Extend\ApiSerializer(DiscussionSerializer::class))
         ->attributes(function (DiscussionSerializer $serializer, Discussion $discussion, array $attributes) {
             $attributes['original_url'] = $discussion->original_url;
             return $attributes;
         }),
-    (new Extend\Listener())
-        ->listen(Saving::class, function (Saving $event) {
-            $discussion = $event->discussion;
-            $actor = $event->actor;
-            $data = $event->data;
 
-            if (isset($data['attributes']['originalUrl'])) {
-                $discussion->original_url = $data['attributes']['originalUrl'];
-            }
+    (new Extend\ApiController(CreateDiscussionController::class))
+        ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
+
+            $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
+            $originalUrl = Arr::get($attributes, 'attributes.originalUrl', '');
+
+            $data->original_url = $originalUrl;
+            $data->save();
         }),
+
+    // 在更新讨论时处理 original_url 字段
+    (new Extend\ApiController(UpdateDiscussionController::class))
+        ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
+
+            $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
+            $originalUrl = Arr::get($attributes, 'attributes.originalUrl', $data->original_url);
+
+
+            $data->original_url = $originalUrl;
+            $data->save();
+        }),
+
 ];

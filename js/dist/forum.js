@@ -34,30 +34,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flarum_common_extend__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! flarum/forum/components/DiscussionComposer */ "flarum/forum/components/DiscussionComposer");
 /* harmony import */ var flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! flarum/common/utils/Stream */ "flarum/common/utils/Stream");
-/* harmony import */ var flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_2__);
-
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default().prototype), 'oninit', function () {
-    this.originalUrl = flarum_common_utils_Stream__WEBPACK_IMPORTED_MODULE_2___default()('');
-  });
-  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default().prototype), 'headerItems', function (items) {
-    var _this = this;
-    console.log('headerItems method called');
-    items.add('originalUrl', m('div', {
-      className: 'Form-group'
-    }, [m('label', {}, app.translator.trans('shebaoting-repost.forum.discussion_composer.original_url_label')), m('input', {
-      className: 'FormControl',
-      value: this.originalUrl(),
-      oninput: function oninput(e) {
-        _this.originalUrl(e.target.value);
-      }
-    })]));
-  });
   (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default().prototype), 'data', function (data) {
-    data.originalUrl = this.originalUrl();
+    // 获取帖子内容
+    var content = data.content;
+
+    // 检查内容是否以 http:// 或 https:// 开头
+    var urlPattern = /^(https?:\/\/[^\s]+)/;
+    var match = content.match(urlPattern);
+    if (match) {
+      // 提取匹配的 URL
+      var originalUrl = match[0];
+
+      // 将提取的 URL 存储到 original_url 字段
+      data.attributes = data.attributes || {};
+      data.attributes.originalUrl = originalUrl;
+      console.log('Detected URL:', originalUrl); // 输出检测到的 URL
+    }
   });
 }
 
@@ -102,17 +97,6 @@ module.exports = flarum.core.compat['common/app'];
 
 "use strict";
 module.exports = flarum.core.compat['common/extend'];
-
-/***/ }),
-
-/***/ "flarum/common/utils/Stream":
-/*!************************************************************!*\
-  !*** external "flarum.core.compat['common/utils/Stream']" ***!
-  \************************************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = flarum.core.compat['common/utils/Stream'];
 
 /***/ }),
 
