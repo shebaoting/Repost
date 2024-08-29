@@ -17,6 +17,7 @@ use Flarum\Api\Controller\CreateDiscussionController;
 use Flarum\Api\Controller\UpdateDiscussionController;
 use Flarum\Discussion\Discussion;
 use Illuminate\Support\Arr;
+use Shebaoting\Repost\Policies\RepostPolicy;
 
 return [
     (new Extend\Frontend('forum'))
@@ -59,5 +60,18 @@ return [
             $data->original_url = $originalUrl;
             $data->save();
         }),
+    // 注册自定义权限
+    (new Extend\Policy())
+        ->modelPolicy(Discussion::class, RepostPolicy::class),
 
+    (new Extend\ApiSerializer(\Flarum\Api\Serializer\ForumSerializer::class))
+        ->attributes(function ($serializer, $model, $attributes) {
+            $actor = $serializer->getActor();
+            $attributes['canExtractUrl'] = $actor->can('repost.extract_url');
+            return $attributes;
+        }),
+
+    // 在 Flarum 管理面板中注册权限
+    (new Extend\Settings())
+        ->serializeToForum('canExtractUrl', 'repost.extract_url', 'boolval', false),
 ];

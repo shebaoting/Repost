@@ -34,6 +34,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flarum_common_extend__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! flarum/forum/components/DiscussionComposer */ "flarum/forum/components/DiscussionComposer");
 /* harmony import */ var flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! flarum/forum/components/DiscussionListItem */ "flarum/forum/components/DiscussionListItem");
+/* harmony import */ var flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
@@ -53,6 +56,42 @@ __webpack_require__.r(__webpack_exports__);
       data.attributes.originalUrl = originalUrl;
       console.log('Detected URL:', originalUrl); // 输出检测到的 URL
     }
+  });
+  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default().prototype), 'infoItems', function (items) {
+    var originalUrl = this.attrs.discussion.attribute('original_url');
+    console.log('Original URL:', originalUrl);
+    if (originalUrl) {
+      try {
+        var url = new URL(originalUrl);
+        var domain = url.hostname; // 获取域名信息，比如 chat.chatgpt.com
+
+        items.add('originalUrl', m('span', {
+          className: 'item-terminalPost'
+        }, domain),
+        // 仅显示域名部分
+        -10);
+      } catch (e) {
+        console.error('Invalid URL:', originalUrl);
+      }
+    }
+  });
+
+  // 修改帖子标题的点击行为
+  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default().prototype), 'view', function (vnode) {
+    var originalUrl = this.attrs.discussion.attribute('original_url');
+    if (originalUrl) {
+      vnode.attrs.onclick = function (event) {
+        event.preventDefault(); // 阻止默认的a标签跳转行为
+        event.stopPropagation(); // 阻止事件传播
+
+        // 移除a标签的href属性
+        event.currentTarget.removeAttribute('href');
+        window.open(originalUrl, '_blank', 'noopener'); // 打开 original_url
+
+        return false; // 确保阻止默认行为
+      };
+    }
+    return vnode;
   });
 }
 
@@ -119,6 +158,17 @@ module.exports = flarum.core.compat['forum/app'];
 
 "use strict";
 module.exports = flarum.core.compat['forum/components/DiscussionComposer'];
+
+/***/ }),
+
+/***/ "flarum/forum/components/DiscussionListItem":
+/*!****************************************************************************!*\
+  !*** external "flarum.core.compat['forum/components/DiscussionListItem']" ***!
+  \****************************************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = flarum.core.compat['forum/components/DiscussionListItem'];
 
 /***/ })
 
