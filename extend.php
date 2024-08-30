@@ -46,7 +46,7 @@ return [
         ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
             $actor = $request->getAttribute('actor');
             // 只在用户有权限时提取 URL
-            if ($actor->can('extractUrl')) {
+            if ($actor->can('repost.extractUrl')) {
                 $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
                 $originalUrl = Arr::get($attributes, 'attributes.originalUrl', '');
 
@@ -63,7 +63,7 @@ return [
         ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
             $actor = $request->getAttribute('actor');
             // 只在用户有权限时提取 URL
-            if ($actor->can('extractUrl')) {
+            if ($actor->can('repost.extractUrl')) {
                 $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
                 $originalUrl = Arr::get($attributes, 'originalUrl', null);
 
@@ -82,7 +82,7 @@ return [
             $actor = $request->getAttribute('actor');
 
             // 确保用户有权限更新 URL
-            if ($actor->can('extractUrl')) {
+            if ($actor->can('repost.extractUrl')) {
                 $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
                 $content = Arr::get($attributes, 'content', '');
 
