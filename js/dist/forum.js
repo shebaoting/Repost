@@ -38,11 +38,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! flarum/forum/components/EditPostComposer */ "flarum/forum/components/EditPostComposer");
 /* harmony import */ var flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var flarum_forum_app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! flarum/forum/app */ "flarum/forum/app");
-/* harmony import */ var flarum_forum_app__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_app__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var flarum_forum_components_DiscussionPage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! flarum/forum/components/DiscussionPage */ "flarum/forum/components/DiscussionPage");
+/* harmony import */ var flarum_forum_components_DiscussionPage__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionPage__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var flarum_models_Discussion__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! flarum/models/Discussion */ "flarum/models/Discussion");
+/* harmony import */ var flarum_models_Discussion__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(flarum_models_Discussion__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var flarum_common_Model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! flarum/common/Model */ "flarum/common/Model");
+/* harmony import */ var flarum_common_Model__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(flarum_common_Model__WEBPACK_IMPORTED_MODULE_6__);
 function _createForOfIteratorHelperLoose(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (t) return (t = t.call(r)).next.bind(t); if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var o = 0; return function () { return o >= r.length ? { done: !0 } : { done: !1, value: r[o++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+
 
 
 
@@ -133,6 +139,28 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
     return vnode;
   });
+  (flarum_models_Discussion__WEBPACK_IMPORTED_MODULE_5___default().prototype).originalUrl = flarum_common_Model__WEBPACK_IMPORTED_MODULE_6___default().attribute('original_url');
+  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionPage__WEBPACK_IMPORTED_MODULE_4___default().prototype), 'onupdate', function () {
+    var discussion = this.discussion;
+
+    // 确保讨论已经加载并且有 originalUrl
+    if (discussion && discussion.originalUrl()) {
+      var originalUrl = discussion.originalUrl();
+      if (originalUrl) {
+        var noticeElement = document.createElement('div');
+        noticeElement.className = 'OriginalUrlNotice';
+        noticeElement.innerHTML = "\n          <p>" + app.translator.trans('shebaoting-repost.forum.notice_message') + "</p>\n        ";
+
+        // 找到第一个帖子元素
+        var firstPost = this.$('.PostStream-item:first-child .Post-body')[0];
+
+        // 检查是否已经插入提示，避免重复插入
+        if (firstPost && !this.$('.OriginalUrlNotice').length) {
+          firstPost.parentNode.insertBefore(noticeElement, firstPost.nextSibling);
+        }
+      }
+    }
+  });
 }
 
 /***/ }),
@@ -154,6 +182,17 @@ flarum_forum_app__WEBPACK_IMPORTED_MODULE_0___default().initializers.add('shebao
   console.log('[shebaoting/repost] Hello, forum!');
   (0,_components_OriginalUrlInput__WEBPACK_IMPORTED_MODULE_1__["default"])();
 });
+
+/***/ }),
+
+/***/ "flarum/common/Model":
+/*!*****************************************************!*\
+  !*** external "flarum.core.compat['common/Model']" ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = flarum.core.compat['common/Model'];
 
 /***/ }),
 
@@ -212,6 +251,17 @@ module.exports = flarum.core.compat['forum/components/DiscussionListItem'];
 
 /***/ }),
 
+/***/ "flarum/forum/components/DiscussionPage":
+/*!************************************************************************!*\
+  !*** external "flarum.core.compat['forum/components/DiscussionPage']" ***!
+  \************************************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = flarum.core.compat['forum/components/DiscussionPage'];
+
+/***/ }),
+
 /***/ "flarum/forum/components/EditPostComposer":
 /*!**************************************************************************!*\
   !*** external "flarum.core.compat['forum/components/EditPostComposer']" ***!
@@ -220,6 +270,17 @@ module.exports = flarum.core.compat['forum/components/DiscussionListItem'];
 
 "use strict";
 module.exports = flarum.core.compat['forum/components/EditPostComposer'];
+
+/***/ }),
+
+/***/ "flarum/models/Discussion":
+/*!**********************************************************!*\
+  !*** external "flarum.core.compat['models/Discussion']" ***!
+  \**********************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = flarum.core.compat['models/Discussion'];
 
 /***/ })
 

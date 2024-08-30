@@ -26,9 +26,9 @@
             "title": "Repost",
             "category": "",
             "icon": {
-                "name": "",
-                "color": "",
-                "backgroundColor": ""
+                "name": "fas fa-quote-right",
+                "color": "#fff",
+                "backgroundColor": "#d13e32"
             }
         },
         "flarum-cli": {

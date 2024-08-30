@@ -2,7 +2,10 @@ import { extend } from 'flarum/common/extend';
 import DiscussionComposer from 'flarum/forum/components/DiscussionComposer';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
 import EditPostComposer from 'flarum/forum/components/EditPostComposer';
-import app from 'flarum/forum/app';
+import DiscussionPage from 'flarum/forum/components/DiscussionPage';
+import Discussion from 'flarum/models/Discussion';
+import Model from 'flarum/common/Model';
+
 export default function () {
   function handleOriginalUrl(data) {
     // 获取帖子内容
@@ -96,5 +99,32 @@ export default function () {
     }
 
     return vnode;
+  });
+
+  Discussion.prototype.originalUrl = Model.attribute('original_url');
+
+  extend(DiscussionPage.prototype, 'onupdate', function () {
+    const discussion = this.discussion;
+
+    // 确保讨论已经加载并且有 originalUrl
+    if (discussion && discussion.originalUrl()) {
+      const originalUrl = discussion.originalUrl();
+
+      if (originalUrl) {
+        const noticeElement = document.createElement('div');
+        noticeElement.className = 'OriginalUrlNotice';
+        noticeElement.innerHTML = `
+          <p>${app.translator.trans('shebaoting-repost.forum.notice_message')}</p>
+        `;
+
+        // 找到第一个帖子元素
+        const firstPost = this.$('.PostStream-item:first-child .Post-body')[0];
+
+        // 检查是否已经插入提示，避免重复插入
+        if (firstPost && !this.$('.OriginalUrlNotice').length) {
+          firstPost.parentNode.insertBefore(noticeElement, firstPost.nextSibling);
+        }
+      }
+    }
   });
 }

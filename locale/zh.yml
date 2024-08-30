@@ -1,0 +1,7 @@
+shebaoting-repost:
+  admin:
+    my_cool_key: My Cool Key
+    permissions:
+      extract_url_label: 提取转载
+  forum:
+    notice_message: 如果您对这篇转载的文章内容有任何想法，可以在下面回复讨论！
