@@ -19,7 +19,22 @@ use Flarum\Discussion\Discussion;
 use Illuminate\Support\Arr;
 use Shebaoting\Repost\Policies\RepostPolicy;
 use Flarum\Api\Controller\UpdatePostController;
-use Flarum\Post\Post;
+use Flarum\Post\Event\Saving;
+
+
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    // 捕获弃用警告
+    if (error_reporting() === 0) {
+        return false; // 忽略错误控制运算符 (@) 影响的错误
+    }
+    if ($errno === E_DEPRECATED || $errno === E_USER_DEPRECATED) {
+        // 记录弃用警告日志，或者直接返回 true 忽略它们
+        error_log("Deprecated warning: $errstr in $errfile on line $errline");
+        return true; // 返回 true 表示错误已经被处理，不继续传播
+    }
+    return false; // 返回 false 表示让其他错误处理程序继续处理
+});
+
 
 return [
     (new Extend\Frontend('forum'))
@@ -76,40 +91,11 @@ return [
         }),
 
 
-    // 扩展更新帖子控制器
-    (new Extend\ApiController(UpdatePostController::class))
-        ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
-            $actor = $request->getAttribute('actor');
+    // 使用事件监听器扩展更新帖子操作
+    (new Extend\Event())
+        ->listen(Saving::class, Listeners\HandleOriginalUrl::class),
 
-            // 确保用户有权限更新 URL
-            if ($actor->can('repost.extractUrl')) {
-                $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
-                $content = Arr::get($attributes, 'content', '');
 
-                // 检查内容是否以 http:// 或 https:// 开头
-                $urlPattern = '/^(https?:\/\/[^\s]+)/';
-                preg_match($urlPattern, $content, $matches);
-
-                // 调试日志
-                error_log('Matched URL: ' . print_r($matches, true));
-
-                if (!empty($matches)) {
-                    // 如果内容开头是 URL，则更新 original_url
-                    $originalUrl = $matches[0];
-                    $discussion = $data->discussion;
-                    $discussion->original_url = $originalUrl;
-                    error_log('Original URL set to: ' . $originalUrl);
-                } else {
-                    // 如果内容开头不是 URL，重置 original_url 为空
-                    $discussion = $data->discussion;
-                    $discussion->original_url = '';
-                    error_log('Original URL cleared');
-                }
-
-                // 保存更改
-                $discussion->save();
-            }
-        }),
     // 添加权限策略
     (new Extend\Policy())
         ->modelPolicy(Discussion::class, RepostPolicy::class),
