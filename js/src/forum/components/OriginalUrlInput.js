@@ -72,10 +72,11 @@ export default function () {
       const findTitleElement = (children) => {
         if (!children) return null;
         for (let child of children) {
-          if (child.tag === 'h2' && child.attrs && child.attrs.className === 'DiscussionListItem-title') {
+          // 确保 child 存在且具有 tag 属性
+          if (child && child.tag && child.attrs && child.attrs.className === 'DiscussionListItem-title') {
             return child;
           }
-          if (child.children) {
+          if (child && child.children) {
             const found = findTitleElement(child.children);
             if (found) return found;
           }
