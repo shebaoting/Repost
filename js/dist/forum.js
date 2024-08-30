@@ -36,30 +36,51 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! flarum/forum/components/DiscussionListItem */ "flarum/forum/components/DiscussionListItem");
 /* harmony import */ var flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! flarum/forum/components/EditPostComposer */ "flarum/forum/components/EditPostComposer");
+/* harmony import */ var flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var flarum_forum_app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! flarum/forum/app */ "flarum/forum/app");
+/* harmony import */ var flarum_forum_app__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(flarum_forum_app__WEBPACK_IMPORTED_MODULE_4__);
+function _createForOfIteratorHelperLoose(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (t) return (t = t.call(r)).next.bind(t); if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var o = 0; return function () { return o >= r.length ? { done: !0 } : { done: !1, value: r[o++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+
 
 
 
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default().prototype), 'data', function (data) {
+  function handleOriginalUrl(data) {
     // 获取帖子内容
     var content = data.content;
 
     // 检查内容是否以 http:// 或 https:// 开头
     var urlPattern = /^(https?:\/\/[^\s]+)/;
     var match = content.match(urlPattern);
+    console.log('Matched URL:', match);
+    data.attributes = data.attributes || {};
     if (match) {
-      // 提取匹配的 URL
+      // 提取匹配的 URL 并更新 original_url
       var originalUrl = match[0];
-
-      // 将提取的 URL 存储到 original_url 字段
-      data.attributes = data.attributes || {};
       data.attributes.originalUrl = originalUrl;
-      console.log('Detected URL:', originalUrl); // 输出检测到的 URL
+      console.log('Original URL set:', originalUrl);
+    } else {
+      // 如果内容开头不是网址，重置 original_url 为空
+      data.attributes.originalUrl = '';
+      console.log('Original URL cleared');
     }
+  }
+
+  // 扩展新帖子的创建逻辑
+  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionComposer__WEBPACK_IMPORTED_MODULE_1___default().prototype), 'data', function (data) {
+    handleOriginalUrl(data);
+  });
+
+  // 扩展帖子编辑的逻辑
+  (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_EditPostComposer__WEBPACK_IMPORTED_MODULE_3___default().prototype), 'data', function (data) {
+    handleOriginalUrl(data);
   });
   (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default().prototype), 'infoItems', function (items) {
     var originalUrl = this.attrs.discussion.attribute('original_url');
-    console.log('Original URL:', originalUrl);
     if (originalUrl) {
       try {
         var url = new URL(originalUrl);
@@ -80,16 +101,35 @@ __webpack_require__.r(__webpack_exports__);
   (0,flarum_common_extend__WEBPACK_IMPORTED_MODULE_0__.extend)((flarum_forum_components_DiscussionListItem__WEBPACK_IMPORTED_MODULE_2___default().prototype), 'view', function (vnode) {
     var originalUrl = this.attrs.discussion.attribute('original_url');
     if (originalUrl) {
-      vnode.attrs.onclick = function (event) {
-        event.preventDefault(); // 阻止默认的a标签跳转行为
-        event.stopPropagation(); // 阻止事件传播
-
-        // 移除a标签的href属性
-        event.currentTarget.removeAttribute('href');
-        window.open(originalUrl, '_blank', 'noopener'); // 打开 original_url
-
-        return false; // 确保阻止默认行为
+      // 递归查找标题元素的函数
+      var _findTitleElement = function findTitleElement(children) {
+        if (!children) return null;
+        for (var _iterator = _createForOfIteratorHelperLoose(children), _step; !(_step = _iterator()).done;) {
+          var child = _step.value;
+          if (child.tag === 'h2' && child.attrs && child.attrs.className === 'DiscussionListItem-title') {
+            return child;
+          }
+          if (child.children) {
+            var found = _findTitleElement(child.children);
+            if (found) return found;
+          }
+        }
+        return null;
       };
+
+      // 查找标题元素
+      var titleElement = _findTitleElement(vnode.children);
+      if (titleElement) {
+        // 为标题添加点击事件
+        titleElement.attrs.onclick = function (event) {
+          event.preventDefault(); // 阻止默认的 a 标签跳转行为
+          event.stopPropagation(); // 阻止事件传播
+
+          window.open(originalUrl, '_blank', 'noopener'); // 打开 original_url
+
+          return false; // 确保阻止默认行为
+        };
+      }
     }
     return vnode;
   });
@@ -169,6 +209,17 @@ module.exports = flarum.core.compat['forum/components/DiscussionComposer'];
 
 "use strict";
 module.exports = flarum.core.compat['forum/components/DiscussionListItem'];
+
+/***/ }),
+
+/***/ "flarum/forum/components/EditPostComposer":
+/*!**************************************************************************!*\
+  !*** external "flarum.core.compat['forum/components/EditPostComposer']" ***!
+  \**************************************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = flarum.core.compat['forum/components/EditPostComposer'];
 
 /***/ })
 

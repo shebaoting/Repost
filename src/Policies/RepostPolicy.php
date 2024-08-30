@@ -8,9 +8,10 @@ use Flarum\User\User;
 
 class RepostPolicy extends AbstractPolicy
 {
+    protected $model = Discussion::class;
+
     public function extractUrl(User $actor, Discussion $discussion)
     {
-        // 检查用户是否具有提取URL的权限
-        return $actor->hasPermission('discussion.extractUrl');
+        return $actor->hasPermission('repost.extractUrl');
     }
 }

@@ -18,6 +18,8 @@ use Flarum\Api\Controller\UpdateDiscussionController;
 use Flarum\Discussion\Discussion;
 use Illuminate\Support\Arr;
 use Shebaoting\Repost\Policies\RepostPolicy;
+use Flarum\Api\Controller\UpdatePostController;
+use Flarum\Post\Post;
 
 return [
     (new Extend\Frontend('forum'))
@@ -39,39 +41,79 @@ return [
             return $attributes;
         }),
 
+    // 扩展创建讨论控制器
     (new Extend\ApiController(CreateDiscussionController::class))
         ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
+            $actor = $request->getAttribute('actor');
+            // 只在用户有权限时提取 URL
+            if ($actor->can('extractUrl')) {
+                $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
+                $originalUrl = Arr::get($attributes, 'attributes.originalUrl', '');
 
-            $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
-            $originalUrl = Arr::get($attributes, 'attributes.originalUrl', '');
-
-            $data->original_url = $originalUrl;
-            $data->save();
+                if ($originalUrl) {
+                    $data->original_url = $originalUrl;
+                    $data->save();
+                }
+            }
         }),
 
-    // 在更新讨论时处理 original_url 字段
+
+    // 扩展更新讨论控制器
     (new Extend\ApiController(UpdateDiscussionController::class))
         ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
+            $actor = $request->getAttribute('actor');
+            // 只在用户有权限时提取 URL
+            if ($actor->can('extractUrl')) {
+                $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
+                $originalUrl = Arr::get($attributes, 'originalUrl', null);
 
-            $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
-            $originalUrl = Arr::get($attributes, 'attributes.originalUrl', $data->original_url);
+                if ($originalUrl !== null) {
+                    $data->original_url = $originalUrl;
+                }
 
-
-            $data->original_url = $originalUrl;
-            $data->save();
+                $data->save();
+            }
         }),
-    // 注册自定义权限
+
+
+    // 扩展更新帖子控制器
+    (new Extend\ApiController(UpdatePostController::class))
+        ->prepareDataForSerialization(function ($controller, $data, $request, $document) {
+            $actor = $request->getAttribute('actor');
+
+            // 确保用户有权限更新 URL
+            if ($actor->can('extractUrl')) {
+                $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
+                $content = Arr::get($attributes, 'content', '');
+
+                // 检查内容是否以 http:// 或 https:// 开头
+                $urlPattern = '/^(https?:\/\/[^\s]+)/';
+                preg_match($urlPattern, $content, $matches);
+
+                // 调试日志
+                error_log('Matched URL: ' . print_r($matches, true));
+
+                if (!empty($matches)) {
+                    // 如果内容开头是 URL，则更新 original_url
+                    $originalUrl = $matches[0];
+                    $discussion = $data->discussion;
+                    $discussion->original_url = $originalUrl;
+                    error_log('Original URL set to: ' . $originalUrl);
+                } else {
+                    // 如果内容开头不是 URL，重置 original_url 为空
+                    $discussion = $data->discussion;
+                    $discussion->original_url = '';
+                    error_log('Original URL cleared');
+                }
+
+                // 保存更改
+                $discussion->save();
+            }
+        }),
+    // 添加权限策略
     (new Extend\Policy())
         ->modelPolicy(Discussion::class, RepostPolicy::class),
-
-    (new Extend\ApiSerializer(\Flarum\Api\Serializer\ForumSerializer::class))
-        ->attributes(function ($serializer, $model, $attributes) {
-            $actor = $serializer->getActor();
-            $attributes['canExtractUrl'] = $actor->can('repost.extract_url');
-            return $attributes;
-        }),
-
-    // 在 Flarum 管理面板中注册权限
+    // 在管理员界面中添加权限设置
     (new Extend\Settings())
-        ->serializeToForum('canExtractUrl', 'repost.extract_url', 'boolval', false),
+        ->serializeToForum('repost.extractUrl', 'repost.extractUrl', 'boolval', false),
 ];

@@ -15,6 +15,11 @@ __webpack_require__.r(__webpack_exports__);
 
 flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default().initializers.add('shebaoting/repost', function () {
   console.log('[shebaoting/repost] Hello, admin!');
+  flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default().extensionData["for"]('shebaoting-repost').registerPermission({
+    icon: 'fas fa-link',
+    label: flarum_admin_app__WEBPACK_IMPORTED_MODULE_0___default().translator.trans('shebaoting-repost.admin.permissions.extract_url_label'),
+    permission: 'repost.extractUrl'
+  }, 'start', 95);
 });
 
 /***/ }),

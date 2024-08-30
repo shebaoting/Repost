@@ -3,5 +3,6 @@ shebaoting-repost:
   # Checkout https://docs.flarum.org/extend/i18n/#appendix-a-standard-key-format
   admin:
     my_cool_key: My Cool Key
-
+    permissions:
+      extract_url_label: Extract from the original web site
   forum:
