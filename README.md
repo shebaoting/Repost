@@ -1,6 +1,6 @@
 # Repost
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/shebaoting/repost.svg)](https://packagist.org/packages/shebaoting/repost) [![Total Downloads](https://img.shields.io/packagist/dt/shebaoting/repost.svg)](https://packagist.org/packages/shebaoting/repost)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) [![Latest Stable Version](https://img.shields.io/packagist/v/shebaoting/flarum-repost.svg)](https://packagist.org/packages/shebaoting/flarum-repost) [![Total Downloads](https://img.shields.io/packagist/dt/shebaoting/flarum-repost.svg)](https://packagist.org/packages/shebaoting/flarum-repost)
 
 **Repost** is a Flarum 2.x extension for publishing link-based discussions. If a new discussion starts with an HTTP or HTTPS URL, the extension stores that URL as the discussion's original source and turns the discussion list title into an external link. The local discussion page remains available, so community members can still reply, moderate, and discuss the linked content inside Flarum.
 
@@ -30,7 +30,7 @@ This extension is intended for Flarum 2.x. Use the `v0.x` series for old Flarum 
 Install the extension with Composer:
 
 ```sh
-composer require shebaoting/repost:"^2.0"
+composer require shebaoting/flarum-repost:"^2.0"
 php flarum migrate
 php flarum cache:clear
 ```
@@ -38,7 +38,7 @@ php flarum cache:clear
 If you are using a local path repository during development, require the same 2.x constraint from your Flarum app:
 
 ```sh
-composer require shebaoting/repost:"^2.0" -W
+composer require shebaoting/flarum-repost:"^2.0" -W
 php flarum migrate
 php flarum cache:clear
 ```
@@ -46,9 +46,16 @@ php flarum cache:clear
 ## Updating
 
 ```sh
-composer update shebaoting/repost -W
+composer update shebaoting/flarum-repost -W
 php flarum migrate
 php flarum cache:clear
+```
+
+If your forum still requires the old package name, switch the Composer requirement first:
+
+```sh
+composer remove shebaoting/repost --no-update
+composer require shebaoting/flarum-repost:"^2.0" -W
 ```
 
 After clearing the cache, refresh the forum page in the browser so Flarum regenerates the combined frontend assets.
@@ -123,8 +130,8 @@ If the original URL is not saved, check that the actor has the **Extract origina
 ## Links
 
 - [My Community](https://wyz.xyz)
-- [Packagist](https://packagist.org/packages/shebaoting/repost)
-- [GitHub](https://github.com/shebaoting/repost)
+- [Packagist](https://packagist.org/packages/shebaoting/flarum-repost)
+- [GitHub](https://github.com/shebaoting/flarum-repost)
 
 ## License
 

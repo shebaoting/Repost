@@ -1,12 +1,15 @@
 {
-    "name": "shebaoting/repost",
+    "name": "shebaoting/flarum-repost",
     "description": "A Flarum extension that redirects to the original URL if specified when posting.",
     "keywords": [
         "flarum"
     ],
-    "version": "2.0.1",
+    "version": "2.0.2",
     "type": "flarum-extension",
     "license": "MIT",
+    "replace": {
+        "shebaoting/repost": "self.version"
+    },
     "require": {
         "php": "^8.3",
         "flarum/core": "^2.0.0-beta"

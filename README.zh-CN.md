@@ -28,7 +28,7 @@
 通过 Composer 安装：
 
 ```sh
-composer require shebaoting/repost:"^2.0"
+composer require shebaoting/flarum-repost:"^2.0"
 php flarum migrate
 php flarum cache:clear
 ```
@@ -36,7 +36,7 @@ php flarum cache:clear
 如果你在本地开发环境中使用 path repository，可以在 Flarum 项目里执行：
 
 ```sh
-composer require shebaoting/repost:"^2.0" -W
+composer require shebaoting/flarum-repost:"^2.0" -W
 php flarum migrate
 php flarum cache:clear
 ```
@@ -44,9 +44,16 @@ php flarum cache:clear
 ## 更新
 
 ```sh
-composer update shebaoting/repost -W
+composer update shebaoting/flarum-repost -W
 php flarum migrate
 php flarum cache:clear
+```
+
+如果你的站点仍然使用旧包名，请先切换 Composer 依赖：
+
+```sh
+composer remove shebaoting/repost --no-update
+composer require shebaoting/flarum-repost:"^2.0" -W
 ```
 
 清理缓存后，刷新论坛页面，让 Flarum 重新生成合并后的前端资源。
@@ -121,8 +128,8 @@ php flarum cache:clear
 ## 相关链接
 
 - [我的社区](https://wyz.xyz)
-- [Packagist](https://packagist.org/packages/shebaoting/repost)
-- [GitHub](https://github.com/shebaoting/repost)
+- [Packagist](https://packagist.org/packages/shebaoting/flarum-repost)
+- [GitHub](https://github.com/shebaoting/flarum-repost)
 
 ## 授权协议
 

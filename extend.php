@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of shebaoting/repost.
+ * This file is part of shebaoting/flarum-repost.
  *
  * Copyright (c) 2024 shebaoting.
  *

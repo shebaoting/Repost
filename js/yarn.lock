@@ -1507,9 +1507,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shebaoting/repost@workspace:.":
+"@shebaoting/flarum-repost@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@shebaoting/repost@workspace:."
+  resolution: "@shebaoting/flarum-repost@workspace:."
   dependencies:
     "@flarum/prettier-config": "npm:^1.0.0"
     flarum-tsconfig: "npm:^2.0.0"
