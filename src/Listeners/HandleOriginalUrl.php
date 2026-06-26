@@ -7,19 +7,24 @@ use Illuminate\Support\Arr;
 
 class HandleOriginalUrl
 {
-    public function handle(Saving $event)
+    public function handle(Saving $event): void
     {
         $post = $event->post;
         $discussion = $post->discussion;
         $actor = $event->actor;
 
         // 仅在帖子内容更新时处理 original_url
-        if (isset($event->data['attributes']['content']) && $actor->can('repost.extractUrl')) {
+        if (
+            $discussion
+            && isset($event->data['attributes']['content'])
+            && $actor->hasPermission('repost.extractUrl')
+            && ($post->number === 1 || (! $post->exists && ! $discussion->first_post_id))
+        ) {
             $attributes = Arr::get($event->data, 'attributes', []);
             $content = Arr::get($attributes, 'content', '');
 
             // 检查内容是否以 http:// 或 https:// 开头
-            $urlPattern = '/^(https?:\/\/[^\s]+)/';
+            $urlPattern = '/^(https?:\/\/[^\s]+)/i';
             preg_match($urlPattern, $content, $matches);
 
             if (!empty($matches)) {
@@ -27,8 +32,7 @@ class HandleOriginalUrl
                 $originalUrl = $matches[0];
                 $discussion->original_url = $originalUrl;
             } else {
-                // 如果内容开头不是 URL，不改变原有的 original_url
-                // 或者可以选择清空 original_url，取决于业务逻辑
+                // 如果内容开头不是 URL，则清空 original_url
                 $discussion->original_url = '';
             }
 

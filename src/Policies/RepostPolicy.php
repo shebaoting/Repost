@@ -10,7 +10,7 @@ class RepostPolicy extends AbstractPolicy
 {
     protected $model = Discussion::class;
 
-    public function extractUrl(User $actor, Discussion $discussion)
+    public function extractUrl(User $actor, Discussion $discussion): bool
     {
         return $actor->hasPermission('repost.extractUrl');
     }

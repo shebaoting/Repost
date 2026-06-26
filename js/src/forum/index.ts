@@ -1,7 +1,8 @@
 import app from 'flarum/forum/app';
 import addOriginalUrlInput from './components/OriginalUrlInput';
 
+export { default as extend } from './extend';
+
 app.initializers.add('shebaoting-repost', () => {
-  console.log('[shebaoting/repost] Hello, forum!');
   addOriginalUrlInput();
 });
